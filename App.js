@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
-import LoginForm from './components/Login';
-import Profile from './components/Profile';
-// states
-const App = () => {
-    const [login, set_login] = useState(false);
-    const login_handle = () => {
-        set_login(true); // it set to true when the login is successful!
-    };
-    return (
-        <div>
-            {!login ? ( <LoginForm onLogin={login_handle} />) : ( <Profile />)}
-        </div>
-    );
-};
-export default App;
+const express = require('express');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const routes = require('./routes');
+const app = express();
+app.use(bodyParser.json()); // it is for the middleware setup 
+app.use(cors({
+    origin: 'http://localhost:3000', // for running frontend
+    credentials: true,}));
+app.use(session({
+    secret: 'your-secret-key-here', 
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, 
+        maxAge: 3600000,},}));
+app.use('/api',routes); // setting up the router
+app.listen(5000,()=>console.log('Backend running on http://localhost:5000'));
